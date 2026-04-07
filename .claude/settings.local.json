@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/evel0938/.claude/projects/c--Users-evel0938-Dropbox-Projects-2026---Corals-as-kin-AR-poster/**)",
+      "Read(//c/Users/evel0938/.claude/projects/c--Users-evel0938-Dropbox-Projects-2026---Corals-as-kin-AR-poster/memory/**)"
+    ]
+  }
+}

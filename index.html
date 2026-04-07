@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>Corals as Kin — AR Experience</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="landing">
+
+    <div class="landing-container">
+
+        <div class="landing-header">
+            <div class="logo-mark" aria-hidden="true">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stylised coral polyp -->
+                    <circle cx="24" cy="24" r="22" stroke="var(--accent)" stroke-width="1.5" opacity="0.4"/>
+                    <circle cx="24" cy="24" r="4" fill="var(--accent)" opacity="0.9"/>
+                    <!-- Tentacle lines -->
+                    <line x1="24" y1="20" x2="24" y2="6"  stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+                    <line x1="24" y1="28" x2="24" y2="42" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+                    <line x1="20" y1="24" x2="6"  y2="24" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+                    <line x1="28" y1="24" x2="42" y2="24" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+                    <line x1="21.2" y1="21.2" x2="11.5" y2="11.5" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+                    <line x1="26.8" y1="26.8" x2="36.5" y2="36.5" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+                    <line x1="26.8" y1="21.2" x2="36.5" y2="11.5" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+                    <line x1="21.2" y1="26.8" x2="11.5" y2="36.5" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+                </svg>
+            </div>
+            <p class="landing-subtitle">Fluoresci Research · Dr Anya Salih</p>
+        </div>
+
+        <div class="landing-hero">
+            <h1 class="landing-title">Corals<br>as Kin</h1>
+            <p class="landing-tagline">Experience the hidden life of corals<br>through augmented reality</p>
+        </div>
+
+        <div class="landing-action">
+            <a href="ar.html" class="btn-start" id="start-btn">
+                <span class="btn-start-text">Start experience</span>
+                <svg class="btn-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <p class="landing-hint">Point your phone camera at the poster</p>
+        </div>
+
+        <div class="landing-stages" aria-label="Experience stages">
+            <div class="stage-preview">
+                <span class="stage-dot filled" aria-hidden="true"></span>
+                <span class="stage-label">Daylight</span>
+            </div>
+            <div class="stage-divider" aria-hidden="true">→</div>
+            <div class="stage-preview">
+                <span class="stage-dot" aria-hidden="true"></span>
+                <span class="stage-label">Fluorescence</span>
+            </div>
+            <div class="stage-divider" aria-hidden="true">→</div>
+            <div class="stage-preview">
+                <span class="stage-dot" aria-hidden="true"></span>
+                <span class="stage-label">Microscopy</span>
+            </div>
+            <div class="stage-divider" aria-hidden="true">→</div>
+            <div class="stage-preview">
+                <span class="stage-dot" aria-hidden="true"></span>
+                <span class="stage-label">Bleaching</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Desktop / non-mobile fallback -->
+    <div class="desktop-warning" id="desktop-warning" hidden>
+        <div class="desktop-warning-inner">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <path d="M24 8L44 40H4L24 8z" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" fill="none" opacity="0.7"/>
+                <line x1="24" y1="20" x2="24" y2="30" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="24" cy="35" r="1.5" fill="var(--accent)"/>
+            </svg>
+            <h2>Mobile device required</h2>
+            <p>This experience is designed for mobile devices. Please visit on your phone.</p>
+            <div class="qr-placeholder" id="page-qr" aria-label="QR code to this page">
+                <!-- QR code injected by JS -->
+                <canvas id="qr-canvas"></canvas>
+            </div>
+            <p class="qr-caption">Scan to open on your phone</p>
+        </div>
+    </div>
+
+    <script>
+        // Desktop detection — show warning, hide main content
+        const isDesktop = !(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent))
+                          && window.innerWidth > 768;
+        if (isDesktop) {
+            document.getElementById('desktop-warning').hidden = false;
+            document.querySelector('.landing-container').style.display = 'none';
+            // Generate QR code pointing to this page
+            generatePageQR();
+        }
+
+        function generatePageQR() {
+            // Simple inline QR generation using the public API
+            // Falls back to a placeholder message if offline
+            const canvas = document.getElementById('qr-canvas');
+            const url = window.location.href.replace(/\/$/, '') + '/';
+            // Use a data URI approach with QR SVG API
+            const img = document.createElement('img');
+            img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(url);
+            img.alt = 'QR code for ' + url;
+            img.width = 180;
+            img.height = 180;
+            img.onerror = function() {
+                canvas.parentNode.innerHTML = '<p class="qr-url">' + url + '</p>';
+            };
+            canvas.parentNode.replaceChild(img, canvas);
+        }
+    </script>
+</body>
+</html>

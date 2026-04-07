@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Corals as Kin — AR</title>
+
+    <!-- A-Frame must load before MindAR -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="ar-page">
+
+    <!-- ─── SCANNING OVERLAY ────────────────────────────────────────────── -->
+    <!-- Replaces MindAR's built-in scanning UI (uiScanning: #scanning-overlay) -->
+    <div id="scanning-overlay" class="scanning-overlay" role="status" aria-live="polite">
+
+        <div class="scanning-inner">
+            <!-- Viewfinder corner brackets -->
+            <div class="viewfinder" aria-hidden="true">
+                <span class="vf-corner vf-tl"></span>
+                <span class="vf-corner vf-tr"></span>
+                <span class="vf-corner vf-bl"></span>
+                <span class="vf-corner vf-br"></span>
+                <!-- Animated scan line -->
+                <span class="vf-scan-line"></span>
+            </div>
+
+            <div class="scanning-text">
+                <p class="scanning-instruction">Point your camera at the<br><strong>Corals as Kin</strong> poster</p>
+                <p class="scanning-sub" id="scanning-status">Initialising camera…</p>
+            </div>
+        </div>
+
+        <!-- Back button -->
+        <a href="index.html" class="btn-back" aria-label="Return to home">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M12 4l-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Back
+        </a>
+
+    </div>
+
+    <!-- ─── AR UI OVERLAY ─────────────────────────────────────────────────  -->
+    <!-- Sits above the 3D canvas; rendered as normal HTML -->
+    <div id="ui-overlay" class="ui-overlay" aria-hidden="true">
+
+        <!-- Top bar: stage dots + mute button -->
+        <div class="ui-top-bar">
+            <div class="stage-indicators" id="stage-indicators" role="tablist" aria-label="Experience stage">
+                <!-- Dots injected by ui-overlay.js -->
+            </div>
+            <button class="btn-mute" id="btn-mute" aria-label="Unmute audio" title="Unmute">
+                <!-- Icon swapped by ui-overlay.js -->
+                <svg class="icon-muted" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M9 9H5a1 1 0 00-1 1v4a1 1 0 001 1h4l5 4V5L9 9z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                    <line x1="17" y1="9" x2="21" y2="15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="21" y1="9" x2="17" y2="15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <svg class="icon-unmuted" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="display:none">
+                    <path d="M9 9H5a1 1 0 00-1 1v4a1 1 0 001 1h4l5 4V5L9 9z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                    <path d="M15 9a4 4 0 010 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M18 6a8 8 0 010 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Tap-to-continue prompt (shown when video ends if not looping) -->
+        <div class="tap-prompt" id="tap-prompt" aria-live="polite">
+            Tap to continue
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+
+        <!-- Bottom caption bar -->
+        <div class="caption-bar" id="caption-bar">
+            <span class="caption-stage-label" id="caption-stage-label"></span>
+            <p class="caption-text" id="caption-text"></p>
+        </div>
+
+    </div>
+
+    <!-- Fullscreen fade overlay used for stage transitions -->
+    <div id="transition-overlay" class="transition-overlay" aria-hidden="true"></div>
+
+    <!-- ─── A-FRAME AR SCENE ──────────────────────────────────────────────  -->
+    <a-scene
+        mindar-image="imageTargetSrc: assets/poster-target.mind; uiScanning: #scanning-overlay; filterMinCF: 0.001; filterBeta: 0.001; missTolerance: 5; warmupTolerance: 5;"
+        color-space="sRGB"
+        renderer="colorManagement: true; physicallyCorrectLights: true; antialias: false;"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+        loading-screen="enabled: false"
+    >
+        <a-assets timeout="30000">
+            <!--
+                Single <video> element reused across all stages.
+                src is swapped by stage-manager.js on each transition.
+
+                IMPORTANT iOS requirements:
+                  - playsinline + webkit-playsinline  → prevents fullscreen takeover
+                  - muted                             → required for autoplay
+                  - crossorigin="anonymous"           → required for WebGL texture upload
+            -->
+            <video
+                id="coral-video"
+                src="assets/stage1.mp4"
+                playsinline
+                webkit-playsinline
+                muted
+                loop
+                crossorigin="anonymous"
+                preload="auto"
+            ></video>
+        </a-assets>
+
+        <!-- Camera — look-controls disabled; MindAR drives the camera pose -->
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+        <!--
+            Image target entity.
+            targetIndex: 0 = the first (and only) image in poster-target.mind.
+
+            width="1" height="0.5625" = 16:9 aspect ratio.
+            Adjust height to match your poster's actual aspect ratio:
+              4:3  → height="0.75"
+              3:2  → height="0.667"
+              A2 portrait (ISO, ~1:1.414) → height="1.414"
+              A1 portrait → same ratio
+
+            The video plane sits at z=0.001 (1mm in front of target plane)
+            to avoid z-fighting artefacts.
+        -->
+        <a-entity
+            id="ar-target"
+            mindar-image-target="targetIndex: 0"
+            target-handler
+        >
+            <a-video
+                id="ar-video-plane"
+                src="#coral-video"
+                position="0 0 0.001"
+                width="1"
+                height="0.5625"
+                rotation="0 0 0"
+                material="shader: flat; src: #coral-video; side: front;"
+            ></a-video>
+        </a-entity>
+
+    </a-scene>
+
+    <!-- JS modules — order matters: ar-scene defines AFRAME component before scene parses -->
+    <script src="js/ar-scene.js"></script>
+    <script src="js/stage-manager.js"></script>
+    <script src="js/ui-overlay.js"></script>
+
+</body>
+</html>
