@@ -95,10 +95,10 @@
         const isDesktop = !(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent))
                           && window.innerWidth > 768;
         if (isDesktop) {
-            document.getElementById('desktop-warning').hidden = false;
-            document.querySelector('.landing-container').style.display = 'none';
+            //document.getElementById('desktop-warning').hidden = false;
+            //document.querySelector('.landing-container').style.display = 'none';
             // Generate QR code pointing to this page
-            generatePageQR();
+            //generatePageQR();
         }
 
         function generatePageQR() {
