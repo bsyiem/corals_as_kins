@@ -73,8 +73,8 @@
 
     </div>
 
-    <!-- Desktop / non-mobile fallback
-    <div class="desktop-warning" id="desktop-warning" hidden>
+    <!-- Desktop / non-mobile fallback -->
+    <div class="desktop-warning" id="desktop-warning" style = "display:none">
         <div class="desktop-warning-inner">
             <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
                 <path d="M24 8L44 40H4L24 8z" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" fill="none" opacity="0.7"/>
@@ -88,17 +88,17 @@
             </div>
             <p class="qr-caption">Scan to open on your phone</p>
         </div>
-    </div> -->
+    </div>
 
     <script>
         // Desktop detection — show warning, hide main content
         const isDesktop = !(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent))
                           && window.innerWidth > 768;
         if (isDesktop) {
-            // document.getElementById('desktop-warning').hidden = false;
-            // document.querySelector('.landing-container').style.display = 'none';
+            document.getElementById('desktop-warning').style.display = 'flex';
+            document.querySelector('.landing-container').style.display = 'none';
             // Generate QR code pointing to this page
-            // generatePageQR();
+            generatePageQR();
         }
 
         function generatePageQR() {
