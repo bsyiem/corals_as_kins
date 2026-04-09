@@ -72,7 +72,7 @@
 
     </div>
 
-    <!-- Desktop / non-mobile fallback -->
+    Desktop / non-mobile fallback
     <div class="desktop-warning" id="desktop-warning" hidden>
         <div class="desktop-warning-inner">
             <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -92,13 +92,13 @@
 
     <script>
         // Desktop detection — show warning, hide main content
-        const isDesktop = !(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
-                          //&& window.innerWidth > 768;
+        const isDesktop = !(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent))
+                          && window.innerWidth > 768;
         if (isDesktop) {
-            document.getElementById('desktop-warning').hidden = false;
-            document.querySelector('.landing-container').style.display = 'none';
+            // document.getElementById('desktop-warning').hidden = false;
+            // document.querySelector('.landing-container').style.display = 'none';
             // Generate QR code pointing to this page
-            generatePageQR();
+            // generatePageQR();
         }
 
         function generatePageQR() {
